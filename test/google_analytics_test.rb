@@ -151,17 +151,29 @@ class GoogleAnalyticsTest < Test::Unit::TestCase
     mixin.add_google_analytics_code
     assert_equal mixin.response.body, '<body>Google Code<p>some text</p></body>'
 
+    Rubaidh::GoogleAnalytics.asynchronous_mode = true
+    mixin.response.body = "<head><title>Hi</title></head><body></body>"
+    mixin.add_google_analytics_code
+    assert_equal mixin.response.body, "<head><title>Hi</title>Google Code</head><body></body>"
+    Rubaidh::GoogleAnalytics.asynchronous_mode = false
+
     Rubaidh::GoogleAnalytics.defer_load = true
     mixin.response.body = "<body><p>some text</p></body>"
     mixin.add_google_analytics_code
     assert_equal mixin.response.body, '<body><p>some text</p>Google Code</body>'
 
-    # body tag upper cased (ignoring this is semantically incorrect)
+    # Tags upper cased (ignoring this is semantically incorrect)
     Rubaidh::GoogleAnalytics.defer_load = false
     mixin.response.body = "<BODY><p>some text</p></BODY>"
     mixin.add_google_analytics_code
     assert_equal mixin.response.body, '<BODY>Google Code<p>some text</p></BODY>'
 
+    Rubaidh::GoogleAnalytics.asynchronous_mode = true
+    mixin.response.body = "<HEAD><TITLE>Hi</TITLE></HEAD><BODY></BODY>"
+    mixin.add_google_analytics_code
+    assert_equal mixin.response.body, "<HEAD><TITLE>Hi</TITLE>Google Code</HEAD><BODY></BODY>"
+    Rubaidh::GoogleAnalytics.asynchronous_mode = false
+    
     Rubaidh::GoogleAnalytics.defer_load = true
     mixin.response.body = "<BODY><p>some text</p></BODY>"
     mixin.add_google_analytics_code
@@ -172,6 +184,12 @@ class GoogleAnalyticsTest < Test::Unit::TestCase
     mixin.response.body = '<body style="background-color:red"><p>some text</p></body>'
     mixin.add_google_analytics_code
     assert_equal mixin.response.body, '<body style="background-color:red">Google Code<p>some text</p></body>'
+    
+    Rubaidh::GoogleAnalytics.asynchronous_mode = true
+    mixin.response.body = '<head data-test="something"><title>Hi</title></head><body></body>'
+    mixin.add_google_analytics_code
+    assert_equal mixin.response.body, '<head data-test="something"><title>Hi</title>Google Code</head><body></body>'
+    Rubaidh::GoogleAnalytics.asynchronous_mode = false
 
     Rubaidh::GoogleAnalytics.defer_load = true
     mixin.response.body = '<body style="background-color:red"><p>some text</p></body>'

@@ -18,7 +18,7 @@ module Rubaidh # :nodoc:
     # (see http://www.google.com/support/googleanalytics/bin/answer.py?answer=55527&topic=11006)
     def add_google_analytics_code
       if GoogleAnalytics.asynchronous_mode
-        response.body.sub! /<[bB][oO][dD][yY]>/, "<body>#{google_analytics_code}" if response.body.respond_to?(:sub!)
+        response.body.sub! /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" if response.body.respond_to?(:sub!)
       elsif GoogleAnalytics.defer_load
         response.body.sub! /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>" if response.body.respond_to?(:sub!)
       else
@@ -232,9 +232,8 @@ module Rubaidh # :nodoc:
         (function() {
           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
-
       </script>
       HTML
     end
