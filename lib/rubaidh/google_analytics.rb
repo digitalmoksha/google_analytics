@@ -169,32 +169,28 @@ module Rubaidh # :nodoc:
         self.override_domain_name = nil
       end
       
+      tag_helper = JavaScriptTagHelper.new
+      
       code = if local_javascript
-        <<-HTML
-        <script src="#{LocalAssetTagHelper.new.javascript_path( 'ga.js' )}" type="text/javascript">
-        </script>
-        HTML
+        tag_helper.javascript_include_tag LocalAssetTagHelper.new.javascript_path('ga.js')
       else
-        <<-HTML
-      <script type="text/javascript">
-      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-      </script>
-        HTML
+        tag_helper.javascript_tag %Q|
+          var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+          document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+        |
       end
       
-      code << <<-HTML
-      <script type="text/javascript">
-      <!--//--><![CDATA[//><!--
-      try {
-      var pageTracker = _gat._getTracker('#{request_tracker_id}');
-      #{extra_code}
-      pageTracker._initData();
-      pageTracker._trackPageview(#{request_tracked_path});
-      } catch(err) {}
-      //--><!]]>
-      </script>
-      HTML
+      code << tag_helper.javascript_tag(%Q|
+        <!--//--><![CDATA[//><!--
+        try {
+        var pageTracker = _gat._getTracker('#{request_tracker_id}');
+        #{extra_code}
+        pageTracker._initData();
+        pageTracker._trackPageview(#{request_tracked_path});
+        } catch(err) {}
+        //--><!]]>
+      |)
     end
 
     # Construct the legacy version of the Google Analytics code. The +ssl+
@@ -205,26 +201,19 @@ module Rubaidh # :nodoc:
         extra_code = "_udn = \"#{override_domain_name}\";"
         self.override_domain_name = nil
       end
-
-      url = legacy_analytics_js_url(ssl)
-
-      code = <<-HTML
-      <script src="#{url}" type="text/javascript">
-      </script>
-      <script type="text/javascript">
-      _uacct = "#{request_tracker_id}";
-      #{extra_code}
-      urchinTracker(#{request_tracked_path});
-      </script>
-      HTML
+      
+      tag_helper = JavaScriptTagHelper.new
+      code = tag_helper.javascript_include_tag(legacy_analytics_js_url(ssl))
+      code << tag_helper.javascript_tag(%Q|
+        _uacct = "#{request_tracker_id}";
+        #{extra_code}
+        urchinTracker(#{request_tracked_path});
+      |)
     end
 
     # Construct the new asynchronous version of the Google Analytics code.
     def self.asynchronous_google_analytics_code
-
-      code = <<-HTML
-      <script type="text/javascript">
-
+      JavaScriptTagHelper.new.javascript_tag %Q~
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', '#{request_tracker_id}']);
         _gaq.push(['_trackPageview(#{request_tracked_path})']);
@@ -234,8 +223,7 @@ module Rubaidh # :nodoc:
           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
-      </script>
-      HTML
+      ~
     end
     
     # Generate the correct URL for the legacy Analytics JS file
@@ -266,5 +254,11 @@ module Rubaidh # :nodoc:
   class LocalAssetTagHelper # :nodoc:
     # For helping with local javascripts
     include ActionView::Helpers::AssetTagHelper
+  end
+  
+  class JavaScriptTagHelper # :nodoc:
+    # For helping with javascript tags
+    include ActionView::Helpers::TagHelper
+    include ActionView::Helpers::JavaScriptHelper
   end
 end
