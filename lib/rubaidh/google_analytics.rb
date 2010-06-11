@@ -216,7 +216,7 @@ module Rubaidh # :nodoc:
       JavaScriptTagHelper.new.javascript_tag %Q~
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', '#{request_tracker_id}']);
-        _gaq.push(['_trackPageview(#{request_tracked_path})']);
+        _gaq.push(['_trackPageview']);
 
         (function() {
           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
