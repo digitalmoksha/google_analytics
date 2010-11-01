@@ -7,10 +7,16 @@ class ViewHelpersTest < Test::Unit::TestCase
   
   def setup
     Rubaidh::GoogleAnalytics.defer_load = false
+    Rubaidh::GoogleAnalytics.asynchronous_mode = false
   end
   
   def test_link_to_tracked_should_return_a_tracked_link
     assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:pageTracker._trackPageview('/sites/linked');\">Link</a>", link_to_tracked('Link', '/sites/linked', "http://www.example.com" )
+  end
+  
+  def test_link_to_tracked_with_async_should_return_a_tracked_link
+    Rubaidh::GoogleAnalytics.asynchronous_mode = true
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:_gaq.push(['_trackPageview', '/sites/linked']);\">Link</a>", link_to_tracked('Link', '/sites/linked', "http://www.example.com" )
   end
   
   def test_link_to_tracked_with_legacy_should_return_a_tracked_link

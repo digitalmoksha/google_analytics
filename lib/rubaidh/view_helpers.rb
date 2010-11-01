@@ -45,7 +45,9 @@ module Rubaidh
 private
 
     def tracking_call(track_path)
-      if GoogleAnalytics.legacy_mode
+      if GoogleAnalytics.asynchronous_mode
+        "javascript:_gaq.push(['_trackPageview', '#{track_path}']);"
+      elsif GoogleAnalytics.legacy_mode
         "javascript:urchinTracker('#{track_path}');"
       else
         "javascript:pageTracker._trackPageview('#{track_path}');"
