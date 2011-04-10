@@ -4,7 +4,6 @@ spec = Gem::Specification.new do |s|
   s.date              = "2009-04-28"
   s.author            = 'Graeme Mathieson'
   s.email             = 'mathie@rubaidh.com'
-  s.has_rdoc          = true
   s.rubyforge_project = "rubaidh"
   s.homepage          = 'http://rubaidh.com/portfolio/open-source/google-analytics/'
   s.summary           = "[Rails] Easily enable Google Analytics support in your Rails application."
