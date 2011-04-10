@@ -8,14 +8,6 @@ spec = Gem::Specification.new do |s|
   s.rubyforge_project = "rubaidh"
   s.homepage          = 'http://rubaidh.com/portfolio/open-source/google-analytics/'
   s.summary           = "[Rails] Easily enable Google Analytics support in your Rails application."
-
-  s.description = 'By default this gem will output google analytics code for' +
-                  "every page automatically, if it's configured correctly." +
-                  "This is done by adding:\n" +
-                  "Rubaidh::GoogleAnalytics.tracker_id = 'UA-12345-67'\n"
-                  'to your `config/environment.rb`, inserting your own tracker id.'
-                  'This can be discovered by looking at the value assigned to +_uacct+' +
-                  'in the Javascript code.'
   
   s.files = %w( CREDITS MIT-LICENSE README.rdoc Rakefile rails/init.rb
                 test/google_analytics_test.rb
