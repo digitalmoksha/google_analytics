@@ -69,6 +69,21 @@ Tracked links respect the legacy_mode flag.
 Note: Link-tracking works by inserting onclick() code in the HTML. Because of
 this, it will overwrite any onclick that you insert in the html_options hash.
 
+== Tracking links with events
+
+Google Analytics documentation says that events tracking is the preferred method of tracking 
+outbound links.  It has the advantages of being able to track urls with query strings, and 
+organizing links with categories, actions, and labels.
+To create an link tracked with events (internal or outbound), use the link_to_tracked_event helper:
+
+	link_to_tracked_event(name, category, action, url_options = {}, event_options={}, html_options = {})
+	
+To track event links, you should set
+   
+	Rubaidh::GoogleAnalytics.defer_load = false
+
+Tracked event links *do not* respect the legacy_mode flag.
+
 == Using local copies of the Analytics Javascript files
 
 Under certain circumstances you might find it valuable to serve a copy of the
