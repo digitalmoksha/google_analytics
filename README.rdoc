@@ -76,11 +76,11 @@ outbound links.  It has the advantages of being able to track urls with query st
 organizing links with categories, actions, and labels.
 To create an link tracked with events (internal or outbound), use the link_to_tracked_event helper:
 
-	link_to_tracked_event(name, category, action, url_options = {}, event_options={}, html_options = {})
+    link_to_tracked_event(name, category, action, url_options = {}, event_options={}, html_options = {})
 	
 To track event links, you should set
    
-	Rubaidh::GoogleAnalytics.defer_load = false
+    Rubaidh::GoogleAnalytics.defer_load = false
 
 Tracked event links *do not* respect the legacy_mode flag.
 
