@@ -42,6 +42,15 @@ module Rubaidh
       link_to_unless current_page?(options), name, options, html_options, &block
     end
     
+    # Creates a link tag of the given +name+ using a URL created by the set of +url_options+,
+    # with event tracking created by +event_options+ in Google Analytics. The +html_options+
+    # will accept a hash of attributes for the link tag.
+    def link_to_tracked_event(name, category, action, url_options = {}, event_options={}, html_options = {})
+      raise AnalyticsError.new("You must set Rubaidh::GoogleAnalytics.defer_load = false to use event tracking") if GoogleAnalytics.defer_load == true
+      html_options.merge!({:onclick =>event_tracking_call(
+        category, action, event_options[:label], event_options[:value])})
+      link_to name, url_options, html_options
+    end
 private
 
     def tracking_call(track_path)
@@ -54,6 +63,11 @@ private
       end
     end
     
+    def event_tracking_call(category, action, opt_label, opt_value)
+      unless GoogleAnalytics.legacy_mode
+        "javascript:recordOutboundLink(this, '#{category}', '#{action}', '#{opt_label}', '#{opt_value}');return false;"
+      end
+    end
   end
   
   # Error raised by tracking methods if Rubaidh::GoogleAnalytics.defer_load is not configured

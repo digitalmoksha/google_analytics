@@ -189,6 +189,12 @@ module Rubaidh # :nodoc:
         pageTracker._initData();
         pageTracker._trackPageview(#{request_tracked_path});
         } catch(err) {}
+        function recordOutboundLink(link, category, action, opt_label, opt_value) {
+          try {
+            pageTracker._trackEvent(category, action, opt_label, opt_value);
+            setTimeout('document.location = "' + link.href + '"', 100)
+          }catch(err){}
+        }
         //--><!]]>
       |)
     end
@@ -214,6 +220,10 @@ module Rubaidh # :nodoc:
     # Construct the new asynchronous version of the Google Analytics code.
     def self.asynchronous_google_analytics_code
       JavaScriptTagHelper.new.javascript_tag %Q~
+        function recordOutboundLink(link, category, action, opt_label, opt_value) {
+          _gaq.push(['_trackEvent', category, action, opt_label, opt_value]);
+          setTimeout('document.location = "' + link.href + '"', 100);
+        }
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', '#{request_tracker_id}']);
         _gaq.push(['_trackPageview']);
