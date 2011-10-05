@@ -18,26 +18,26 @@ module Rubaidh # :nodoc:
     # (see http://www.google.com/support/googleanalytics/bin/answer.py?answer=55527&topic=11006)
     
     def add_google_analytics_code
-      # Can't use sub! if using rails_xss plugin
-      if (Rails::VERSION::MAJOR < 3) && "".respond_to?(:html_safe)
-        if GoogleAnalytics.asynchronous_mode
-          response.body.sub /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" if response.body.respond_to?(:sub)
+      # Rails 2.3.x + rails_xss plugin support: can't use sub!
+      if (Rails::VERSION::MAJOR < 3) && "".respond_to?(:html_safe) && response.body.respond_to?(:sub)
+        body = if GoogleAnalytics.asynchronous_mode
+          response.body.sub /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" 
         elsif GoogleAnalytics.defer_load
-          response.body.sub /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>" if response.body.respond_to?(:sub)
+          response.body.sub /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>"
         else
-          response.body.sub /(<[bB][oO][dD][yY][^>]*>)/, "\\1#{google_analytics_code}" if response.body.respond_to?(:sub)
-        end.html_safe
-      else
+          response.body.sub /(<[bB][oO][dD][yY][^>]*>)/, "\\1#{google_analytics_code}"
+        end
+        response.body = body.html_safe
+      elsif response.body.respond_to?(:sub!)
         if GoogleAnalytics.asynchronous_mode
-          response.body.sub! /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" if response.body.respond_to?(:sub!)
+          response.body.sub! /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" 
         elsif GoogleAnalytics.defer_load
-          response.body.sub! /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>" if response.body.respond_to?(:sub!)
+          response.body.sub! /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>"
         else
-          response.body.sub! /(<[bB][oO][dD][yY][^>]*>)/, "\\1#{google_analytics_code}" if response.body.respond_to?(:sub!)
+          response.body.sub! /(<[bB][oO][dD][yY][^>]*>)/, "\\1#{google_analytics_code}"
         end
       end
     end
-    
   end
   
   class GoogleAnalyticsConfigurationError < StandardError; end
