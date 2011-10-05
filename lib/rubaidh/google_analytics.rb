@@ -16,17 +16,30 @@ module Rubaidh # :nodoc:
     # If you intend to use the link_to_tracked view helpers, you need to set Rubaidh::GoogleAnalytics.defer_load = false
     # to load the code at the top of the page
     # (see http://www.google.com/support/googleanalytics/bin/answer.py?answer=55527&topic=11006)
+    
     def add_google_analytics_code
-      if GoogleAnalytics.asynchronous_mode
-        response.body.sub! /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" if response.body.respond_to?(:sub!)
-      elsif GoogleAnalytics.defer_load
-        response.body.sub! /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>" if response.body.respond_to?(:sub!)
+      # Can't use sub! if using rails_xss plugin
+      if (Rails::VERSION::MAJOR < 3) && "".respond_to?(:html_safe)
+        if GoogleAnalytics.asynchronous_mode
+          response.body.sub /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" if response.body.respond_to?(:sub)
+        elsif GoogleAnalytics.defer_load
+          response.body.sub /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>" if response.body.respond_to?(:sub)
+        else
+          response.body.sub /(<[bB][oO][dD][yY][^>]*>)/, "\\1#{google_analytics_code}" if response.body.respond_to?(:sub)
+        end.html_safe
       else
-        response.body.sub! /(<[bB][oO][dD][yY][^>]*>)/, "\\1#{google_analytics_code}" if response.body.respond_to?(:sub!)
+        if GoogleAnalytics.asynchronous_mode
+          response.body.sub! /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" if response.body.respond_to?(:sub!)
+        elsif GoogleAnalytics.defer_load
+          response.body.sub! /<\/[bB][oO][dD][yY]>/, "#{google_analytics_code}</body>" if response.body.respond_to?(:sub!)
+        else
+          response.body.sub! /(<[bB][oO][dD][yY][^>]*>)/, "\\1#{google_analytics_code}" if response.body.respond_to?(:sub!)
+        end
       end
     end
+    
   end
-
+  
   class GoogleAnalyticsConfigurationError < StandardError; end
 
   # The core functionality to connect a Rails application
