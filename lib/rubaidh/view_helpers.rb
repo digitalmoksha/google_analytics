@@ -47,8 +47,10 @@ module Rubaidh
     # will accept a hash of attributes for the link tag.
     def link_to_tracked_event(name, category, action, url_options = {}, event_options={}, html_options = {})
       raise AnalyticsError.new("You must set Rubaidh::GoogleAnalytics.defer_load = false to use event tracking") if GoogleAnalytics.defer_load == true
-      html_options.merge!({:onclick =>event_tracking_call(
-        category, action, event_options[:label], event_options[:value])})
+      # Check if link is opening in a new window
+      new_window = html_options[:target] =~ /^_/
+      onclick = event_tracking_call(new_window, category, action, event_options[:label], event_options[:value])
+      html_options.merge!({:onclick => onclick})
       link_to name, url_options, html_options
     end
 private
@@ -63,9 +65,13 @@ private
       end
     end
     
-    def event_tracking_call(category, action, opt_label, opt_value)
+    def event_tracking_call(open_in_new_window, category, action, opt_label, opt_value)
       unless GoogleAnalytics.legacy_mode
-        "javascript:recordOutboundLink(this, '#{category}', '#{action}', '#{opt_label}', '#{opt_value}');return false;"
+        if open_in_new_window
+          "javascript:recordOutboundLinkNewWindow(this, '#{category}', '#{action}', '#{opt_label}', '#{opt_value}');return false;"
+        else
+          "javascript:recordOutboundLink(this, '#{category}', '#{action}', '#{opt_label}', '#{opt_value}');return false;"
+        end
       end
     end
   end

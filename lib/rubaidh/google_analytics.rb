@@ -195,6 +195,14 @@ module Rubaidh # :nodoc:
             setTimeout('document.location = "' + link.href + '"', 100)
           }catch(err){}
         }
+        function recordOutboundLinkNewWindow(link, category, action, opt_label, opt_value) {
+          try {
+            h = window.open(link.href);
+            setTimeout(function() {
+              pageTracker._trackEvent(category, action, opt_label, opt_value);
+            }, 1000);
+          }catch(err){}
+        }
         //--><!]]>
       |)
     end
@@ -223,6 +231,14 @@ module Rubaidh # :nodoc:
         function recordOutboundLink(link, category, action, opt_label, opt_value) {
           _gaq.push(['_trackEvent', category, action, opt_label, opt_value]);
           setTimeout('document.location = "' + link.href + '"', 100);
+        }
+        function recordOutboundLinkNewWindow(link, category, action, opt_label, opt_value) {
+          try {
+            h = window.open(link.href);
+            setTimeout(function() {
+              _gaq.push(['_trackEvent', category, action, opt_label, opt_value]);
+            }, 1000);
+          }catch(err){}
         }
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', '#{request_tracker_id}']);
