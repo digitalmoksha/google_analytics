@@ -62,13 +62,13 @@ class ViewHelpersTest < Test::Unit::TestCase
   
   # Event tracking links
   def test_link_to_tracked_event_should_return_a_event_tracking_link
-    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', '', '');return false;\">Link</a>", 
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', '', 1);return false;\">Link</a>", 
       link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com")
   end
   
   def test_link_to_tracked_event_with_async_should_return_a_tracked_link
     Rubaidh::GoogleAnalytics.asynchronous_mode = true
-    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', '', '');return false;\">Link</a>", 
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', '', 1);return false;\">Link</a>", 
       link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com")
   end
   
@@ -82,14 +82,36 @@ class ViewHelpersTest < Test::Unit::TestCase
     Rubaidh::GoogleAnalytics.defer_load = true
     assert_raise(Rubaidh::AnalyticsError) { link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com") }
   end
+    
   
   def test_link_to_tracked_event_with_label_should_return_a_event_tracking_link_with_label
-    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', 'foo', '');return false;\">Link</a>", 
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', 'foo', 1);return false;\">Link</a>", 
       link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com", :label => 'foo')
   end
   
+  def test_link_to_tracked_event_with_numeric_label_should_return_a_event_tracking_link_with_string_label
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', '123', 1);return false;\">Link</a>", 
+      link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com", :label => 123)
+  end
+  
+  def test_link_to_tracked_event_with_numeric_value_should_return_a_event_tracking_link_with_value
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', '', 123);return false;\">Link</a>", 
+      link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com", :value => 123)
+  end
+  
+  def test_link_to_tracked_event_with_string_value_should_return_a_event_tracking_link_with_numeric_value
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLink(this, 'Event', 'example.com', '', 123);return false;\">Link</a>", 
+      link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com", :value => '123')
+  end
+  
+  def test_link_to_tracked_event_should_error_if_invalid_value_arg
+    assert_raise(Rubaidh::AnalyticsError) { 
+      link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com", :value => 'foo') 
+    }
+  end
+  
   def test_link_to_tracked_event_with_new_window_option_should_return_a_tracking_link_with_new_window
-    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLinkNewWindow(this, 'Event', 'example.com', '', '');return false;\" target=\"_blank\">Link</a>", 
+    assert_equal "<a href=\"http://www.example.com\" onclick=\"javascript:recordOutboundLinkNewWindow(this, 'Event', 'example.com', '', 1);return false;\" target=\"_blank\">Link</a>", 
       link_to_tracked_event('Link', 'Event', 'example.com', "http://www.example.com", {}, :target => '_blank')
   end
 end

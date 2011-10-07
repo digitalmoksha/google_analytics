@@ -65,12 +65,17 @@ private
       end
     end
     
-    def event_tracking_call(open_in_new_window, category, action, opt_label, opt_value)
+    def event_tracking_call(open_in_new_window, category, action, label=nil, value=nil)
+      # Label must be string and value must be integer
+      label = label.nil? ? '' : label.to_s
+      value = value.nil? ? 1 : value.to_i
+      raise AnalyticsError.new("The value argument must be numeric and > 0") if value == 0
+      
       unless GoogleAnalytics.legacy_mode
         if open_in_new_window
-          "javascript:recordOutboundLinkNewWindow(this, '#{category}', '#{action}', '#{opt_label}', '#{opt_value}');return false;"
+          "javascript:recordOutboundLinkNewWindow(this, '#{category}', '#{action}', '#{label}', #{value});return false;"
         else
-          "javascript:recordOutboundLink(this, '#{category}', '#{action}', '#{opt_label}', '#{opt_value}');return false;"
+          "javascript:recordOutboundLink(this, '#{category}', '#{action}', '#{label}', #{value});return false;"
         end
       end
     end
