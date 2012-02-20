@@ -8,7 +8,7 @@ spec = Gem::Specification.new do |s|
   s.homepage          = 'http://rubaidh.com/portfolio/open-source/google-analytics/'
   s.summary           = "[Rails] Easily enable Google Analytics support in your Rails application."
   
-  s.files = %w( CREDITS MIT-LICENSE README.rdoc Rakefile rails/init.rb
+  s.files = %w( CREDITS MIT-LICENSE README.rdoc Rakefile
                 test/google_analytics_test.rb
                 test/test_helper.rb
                 test/view_helpers_test.rb

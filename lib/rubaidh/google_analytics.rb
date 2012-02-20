@@ -18,8 +18,8 @@ module Rubaidh # :nodoc:
     # (see http://www.google.com/support/googleanalytics/bin/answer.py?answer=55527&topic=11006)
     
     def add_google_analytics_code
-      # Rails 2.3.x + rails_xss plugin support: can't use sub!
-      if (Rails::VERSION::MAJOR < 3) && "".respond_to?(:html_safe) && response.body.respond_to?(:sub)
+      # Rails (2.3.x + rails_xss) or Rails 3 plugin support: can't use sub!
+      if "".respond_to?(:html_safe) && response.body.respond_to?(:sub)
         body = if GoogleAnalytics.asynchronous_mode
           response.body.sub /(<\/[hH][eE][aA][dD][^>]*>)/, "#{google_analytics_code}\\1" 
         elsif GoogleAnalytics.defer_load
@@ -167,7 +167,7 @@ module Rubaidh # :nodoc:
     # correctly for the specified format
     def self.enabled?(format)
       raise Rubaidh::GoogleAnalyticsConfigurationError if tracker_id.blank? || analytics_url.blank?
-      environments.include?(RAILS_ENV) && formats.include?(format.to_sym)
+      environments.include?(Rails.env) && formats.include?(format.to_sym)
     end
     
     # Construct the javascript code to be inserted on the calling page. The +ssl+
