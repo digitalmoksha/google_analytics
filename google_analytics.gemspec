@@ -15,7 +15,7 @@ spec = Gem::Specification.new do |s|
                 lib/rubaidh.rb
                 lib/rubaidh/google_analytics.rb
                 lib/rubaidh/view_helpers.rb
-                tasks/google_analytics.rake)
+                lib/tasks/google_analytics.rake)
 
   s.add_dependency 'actionpack'
   s.add_dependency 'activesupport'
